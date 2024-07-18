@@ -30,7 +30,11 @@
 #define CAM_SOC_MAX_BASE            CAM_SOC_MAX_BLOCK
 
 /* maximum number of device regulator */
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+#define CAM_SOC_MAX_REGULATOR       8
+#else
 #define CAM_SOC_MAX_REGULATOR       5
+#endif
 
 /* maximum number of device clock */
 #define CAM_SOC_MAX_CLK             32

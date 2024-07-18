@@ -82,6 +82,7 @@ struct cam_ois_intf_params {
 	struct cam_req_mgr_crm_cb *crm_cb;
 };
 
+#ifndef OPLUS_FEATURE_CAMERA_COMMON
 /**
  * struct cam_ois_ctrl_t - OIS ctrl private data
  * @device_name     :   ois device_name
@@ -124,5 +125,9 @@ struct cam_ois_ctrl_t {
 	struct cam_ois_opcode opcode;
 	uint32_t open_cnt;
 };
+#endif
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+#include "oplus_cam_ois_dev.h"
+#endif
 
 #endif /*_CAM_OIS_DEV_H_ */

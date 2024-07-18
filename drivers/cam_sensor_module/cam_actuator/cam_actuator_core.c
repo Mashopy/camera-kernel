@@ -11,6 +11,9 @@
 #include "cam_trace.h"
 #include "cam_common_util.h"
 #include "cam_packet_util.h"
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+#include "oplus_cam_actuator_core.h"
+#endif
 
 int32_t cam_actuator_construct_default_power_setting(
 	struct cam_sensor_power_ctrl_t *power_info)
@@ -110,6 +113,10 @@ static int32_t cam_actuator_power_up(struct cam_actuator_ctrl_t *a_ctrl)
 	if (rc < 0)
 		CAM_ERR(CAM_ACTUATOR, "cci init failed: rc: %d", rc);
 
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+       rc = oplus_cam_actuator_power_up(a_ctrl);
+#endif
+
 	return rc;
 }
 
@@ -151,6 +158,9 @@ static int32_t cam_actuator_i2c_modes_util(
 {
 	int32_t rc = 0;
 	uint32_t i, size;
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+       oplus_cam_actuator_i2c_modes_util(io_master_info,i2c_list);
+#endif
 
 	if (i2c_list->op_code == CAM_SENSOR_I2C_WRITE_RANDOM) {
 		rc = camera_io_dev_write(io_master_info,
@@ -977,7 +987,11 @@ int32_t cam_actuator_driver_cmd(struct cam_actuator_ctrl_t *a_ctrl,
 			(a_ctrl->io_master_info.master_type == CCI_MASTER)) {
 				CAM_WARN(CAM_ACTUATOR,
 					"CCI HW is in resetting mode:: Reapplying Init settings");
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+				usleep_range(5000, 5010);
+#else
 				usleep_range(1000, 1010);
+#endif
 				rc = cam_actuator_apply_settings(a_ctrl,
 					&a_ctrl->i2c_data.init_settings);
 			}

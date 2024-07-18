@@ -8,6 +8,9 @@
 #include "cam_flash_soc.h"
 #include "cam_flash_core.h"
 #include "cam_common_util.h"
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+#include "oplus_cam_flash_dev.h"
+#endif
 
 static int32_t cam_flash_driver_cmd(struct cam_flash_ctrl *fctrl,
 		void *arg, struct cam_flash_private_soc *soc_private)
@@ -551,6 +554,9 @@ static int32_t cam_flash_platform_probe(struct platform_device *pdev)
 
 	fctrl->flash_state = CAM_FLASH_STATE_INIT;
 	fctrl->open_cnt = 0;
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+	oplus_cam_flash_proc_init(fctrl, pdev);
+#endif
 	CAM_DBG(CAM_FLASH, "Probe success");
 	return rc;
 

@@ -13,6 +13,9 @@
 #include "cam_debug_util.h"
 #include "cam_common_util.h"
 #include "cam_packet_util.h"
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+#include "oplus_cam_eeprom_core.h"
+#endif
 
 #define MAX_READ_SIZE  0x7FFFF
 
@@ -90,6 +93,29 @@ static int cam_eeprom_read_memory(struct cam_eeprom_ctrl_t *e_ctrl,
 			}
 		}
 
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+		if (e_ctrl->io_master_info.cci_client->sid==0x24) {
+			rc = oplus_cam_eeprom_read_memory(e_ctrl, emap, j, memptr);
+			if (rc < 0) {
+				CAM_ERR(CAM_EEPROM, "cam_eeprom_read_memory_oem failed rc %d",
+				    rc);
+			    return rc;
+		    }
+		} else {
+			if (emap[j].poll.valid_size) {
+				rc = camera_io_dev_poll(&e_ctrl->io_master_info,
+					emap[j].poll.addr, emap[j].poll.data,
+					0, emap[j].poll.addr_type,
+					emap[j].poll.data_type,
+					emap[j].poll.delay);
+				if (rc) {
+					CAM_ERR(CAM_EEPROM, "poll failed rc %d",
+						rc);
+					return rc;
+				}
+			}
+		}
+#else
 		if (emap[j].poll.valid_size) {
 			rc = camera_io_dev_poll(&e_ctrl->io_master_info,
 				emap[j].poll.addr, emap[j].poll.data,
@@ -102,6 +128,7 @@ static int cam_eeprom_read_memory(struct cam_eeprom_ctrl_t *e_ctrl,
 				return rc;
 			}
 		}
+#endif /* OPLUS_FEATURE_CAMERA_COMMON */
 
 		if (emap[j].mem.valid_size) {
 			rc = camera_io_dev_read_seq(&e_ctrl->io_master_info,
@@ -1468,6 +1495,13 @@ int32_t cam_eeprom_driver_cmd(struct cam_eeprom_ctrl_t *e_ctrl, void *arg)
 	}
 
 	mutex_lock(&(e_ctrl->eeprom_mutex));
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+	rc = oplus_cam_eeprom_driver_cmd(e_ctrl, arg);
+	if (rc) {
+		CAM_ERR(CAM_EEPROM, "Failed in check eeprom data");
+		goto release_mutex;
+    }
+#endif
 	switch (cmd->op_code) {
 	case CAM_QUERY_CAP:
 		eeprom_cap.slot_info = e_ctrl->soc_info.index;

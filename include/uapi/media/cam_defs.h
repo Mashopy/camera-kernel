@@ -23,10 +23,46 @@
 #define CAM_FLUSH_REQ                           (CAM_COMMON_OPCODE_BASE + 0x8)
 #define CAM_COMMON_OPCODE_MAX                   (CAM_COMMON_OPCODE_BASE + 0x9)
 
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+#define CAM_OEM_COMMON_OPCODE_BASE              0x8000
+#define CAM_GET_OIS_EIS_HALL                    (CAM_OEM_COMMON_OPCODE_BASE + 0x1)
+#define CAM_WRITE_CALIBRATION_DATA              (CAM_OEM_COMMON_OPCODE_BASE + 0x2)
+#define CAM_CHECK_CALIBRATION_DATA              (CAM_OEM_COMMON_OPCODE_BASE + 0x3)
+#define CAM_WRITE_AE_SYNC_DATA                  (CAM_OEM_COMMON_OPCODE_BASE + 0x4)
+#define CAM_OEM_IO_CMD                          (CAM_OEM_COMMON_OPCODE_BASE + 0x5)
+#define CAM_OEM_GET_ID                          (CAM_OEM_COMMON_OPCODE_BASE + 0x6)
+
+#define CAM_OEM_CMD_READ_DEV                    0
+#define CAM_OEM_CMD_WRITE_DEV                   1
+#define CAM_OEM_OIS_CALIB                       2
+#define CAM_OEM_RW_SIZE_MAX                     128
+
+struct cam_oem_i2c_reg_array {
+	uint32_t reg_addr;
+	uint32_t reg_data;
+	uint32_t delay;
+	uint32_t data_mask;
+};
+
+struct cam_oem_rw_ctl {
+	int32_t              cmd_code;
+	uint64_t             cam_regs_ptr;
+	uint32_t             slave_addr;
+	uint32_t             reg_data_type;
+	int32_t              reg_addr_type;
+	int16_t              num_bytes;
+};
+#endif
+
 #define CAM_COMMON_OPCODE_BASE_v2           0x150
 #define CAM_ACQUIRE_HW                      (CAM_COMMON_OPCODE_BASE_v2 + 0x1)
 #define CAM_RELEASE_HW                      (CAM_COMMON_OPCODE_BASE_v2 + 0x2)
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+//add dpc read for imx471
+#define CAM_GET_DPC_DATA                    (CAM_COMMON_OPCODE_BASE_v2 + 0x3)
+#else
 #define CAM_DUMP_REQ                        (CAM_COMMON_OPCODE_BASE_v2 + 0x3)
+#endif
 
 #define CAM_EXT_OPCODE_BASE                     0x200
 #define CAM_CONFIG_DEV_EXTERNAL                 (CAM_EXT_OPCODE_BASE + 0x1)
@@ -75,6 +111,16 @@ enum flush_type_t {
 	CAM_FLUSH_TYPE_MAX
 };
 
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+/*add for get hall dat for EIS*/
+#define HALL_MAX_NUMBER 12
+struct ois_hall_type {
+	uint32_t dataNum;
+	uint32_t mdata[HALL_MAX_NUMBER];
+	uint32_t timeStamp;
+};
+#endif
+
 /**
  * struct cam_control - Structure used by ioctl control for camera
  *
@@ -95,6 +141,11 @@ struct cam_control {
 /* camera IOCTL */
 #define VIDIOC_CAM_CONTROL \
 	_IOWR('V', BASE_VIDIOC_PRIVATE, struct cam_control)
+
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+#define VIDIOC_CAM_FTM_POWNER_UP 0
+#define VIDIOC_CAM_FTM_POWNER_DOWN 1
+#endif
 
 /**
  * struct cam_hw_version - Structure for HW version of camera devices
@@ -878,5 +929,10 @@ struct cam_dump_req_cmd {
 	int32_t        link_hdl;
 	int32_t        dev_handle;
 };
+
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+#define VIDIOC_CAM_SENSOR_STATR 0x9000
+#define VIDIOC_CAM_SENSOR_STOP 0x9001
+#endif
 
 #endif /* __UAPI_CAM_DEFS_H__ */

@@ -3910,7 +3910,6 @@ static int cam_ife_mgr_stop_hw_in_overflow(void *stop_hw_args)
 	if (i == ctx->num_base)
 		master_base_idx = ctx->base[0].idx;
 
-
 	/* stop the master CIDs first */
 	cam_ife_mgr_csid_stop_hw(ctx, &ctx->res_list_ife_cid,
 		master_base_idx, CAM_CSID_HALT_IMMEDIATELY);
@@ -4465,6 +4464,9 @@ start_only:
 
 	ctx->dual_ife_irq_mismatch_cnt = 0;
 	/* Start IFE root node: do nothing */
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+	ctx->dual_ife_irq_mismatch_cnt = 0;
+#endif
 	CAM_DBG(CAM_ISP, "Start success for ctx id:%d", ctx->ctx_index);
 
 	return 0;

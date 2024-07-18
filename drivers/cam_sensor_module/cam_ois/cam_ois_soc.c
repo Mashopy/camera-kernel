@@ -12,6 +12,9 @@
 
 #include "cam_ois_soc.h"
 #include "cam_debug_util.h"
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+#include "oplus_cam_ois_soc.h"
+#endif
 
 /**
  * @e_ctrl: ctrl structure
@@ -117,6 +120,9 @@ int cam_ois_driver_soc_init(struct cam_ois_ctrl_t *o_ctrl)
 	rc = cam_ois_get_dt_data(o_ctrl);
 	if (rc < 0)
 		CAM_DBG(CAM_OIS, "failed: ois get dt data rc %d", rc);
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+	cam_ois_driver_soc_init_oem(o_ctrl,of_node);
+#endif
 
 	return rc;
 }

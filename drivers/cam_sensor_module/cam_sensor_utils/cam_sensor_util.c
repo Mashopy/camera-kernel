@@ -1771,7 +1771,7 @@ int msm_cam_sensor_handle_reg_gpio(int seq_type,
 	gpio_offset = seq_type;
 
 	if (gpio_num_info->valid[gpio_offset] == 1) {
-		CAM_DBG(CAM_SENSOR, "VALID GPIO offset: %d, seqtype: %d",
+		CAM_INFO(CAM_SENSOR, "VALID GPIO offset: %d, seqtype: %d",
 			 gpio_offset, seq_type);
 		cam_res_mgr_gpio_set_value(
 			gpio_num_info->gpio_num

@@ -435,6 +435,7 @@ destroy_dev_hdl:
 	return rc;
 }
 
+#ifndef OPLUS_FEATURE_CAMERA_COMMON
 static int __cam_node_handle_dump_dev(struct cam_node *node,
 	struct cam_dump_req_cmd *dump)
 {
@@ -467,6 +468,7 @@ static int __cam_node_handle_dump_dev(struct cam_node *node,
 
 	return rc;
 }
+#endif
 
 static int __cam_node_handle_release_hw_v1(struct cam_node *node,
 	struct cam_release_hw_cmd_v1 *release)
@@ -930,6 +932,7 @@ release_kfree:
 		}
 		break;
 	}
+#ifndef OPLUS_FEATURE_CAMERA_COMMON
 	case CAM_DUMP_REQ: {
 		struct cam_dump_req_cmd dump;
 
@@ -954,6 +957,7 @@ release_kfree:
 		}
 		break;
 	}
+#endif
 	default:
 		CAM_ERR(CAM_CORE, "Unknown op code %d", cmd->op_code);
 		rc = -EINVAL;
